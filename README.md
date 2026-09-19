@@ -8,7 +8,7 @@
 [![Google Cloud Run](https://img.shields.io/badge/GCP-Cloud%20Run-4285F4.svg?style=flat-square&logo=googlecloud)](https://cloud.google.com/run)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-**HamaraShops.ai** is an enterprise-grade full-stack platform featuring an event-driven Java 21 Spring Boot microservices backend and a modern React 19 single-page application (SPA) frontend. Built for high performance, fault isolation, and cloud-native scalability, the architecture decouples domain capabilities into autonomous services orchestrated via a Spring Cloud WebFlux API Gateway and deployed serverlessly on Google Cloud Run.
+**HamaraShops.ai** is an enterprise-grade full-stack platform featuring an event-driven Java 17 Spring Boot microservices backend and a modern React 19 single-page application (SPA) frontend. Built for high performance, fault isolation, and cloud-native scalability, the architecture decouples domain capabilities into autonomous services orchestrated via a Spring Cloud WebFlux API Gateway and deployed serverlessly on Google Cloud Run.
 
 ---
 
@@ -88,7 +88,7 @@ HamaraShops-Ai/
 ## 🛠 Technology Stack Details
 
 ### Backend Stack
-- **Java**: JDK 21 (Eclipse Temurin)
+- **Java**: JDK 17 (Eclipse Temurin)
 - **Framework**: Spring Boot `4.1.0`
 - **Cloud Infrastructure**: Spring Cloud `2025.1.2` (Gateway WebFlux, LoadBalancer, Actuator)
 - **Build Tool**: Apache Maven `3.9.9`
@@ -121,7 +121,7 @@ HamaraShops-Ai/
 ## 💻 Local Development Quickstart
 
 ### Prerequisites
-- **JDK 21** or later installed
+- **JDK 17** or later installed
 - **Node.js 20+** and **npm 10+** installed
 - **Apache Maven 3.9+** installed
 
