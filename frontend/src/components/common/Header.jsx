@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Search,
   Menu,
@@ -9,10 +10,8 @@ import {
   ChevronDown,
   Linkedin,
   ExternalLink,
-  User,
   CalendarDays,
 } from 'lucide-react';
-import SearchModal from './SearchModal';
 
 const LINKEDIN_URL =
   'https://www.linkedin.com/in/madhikuntla-bhavani-7943ab1b0';
@@ -20,43 +19,20 @@ const LINKEDIN_URL =
 const YOUTUBE_URL =
   'https://www.youtube.com/embed/pxaMqyFmHO0?autoplay=1&rel=0';
 
-// =====================================================
-// NAVIGATION
-// =====================================================
+const Header = () => {
+  const location = useLocation();
 
-const navLinks = [
-  {
-    name: 'About',
-    path: '/about',
-  },
-  {
-    name: 'Industries',
-    path: '/industries',
-  },
-  {
-    name: 'AI Use Cases',
-    path: '/use-cases',
-  },
-  {
-    name: 'AI Architecture',
-    path: '/architecture',
-  },
-  {
-    name: 'Business Value',
-    path: '/business-value',
-  },
-  {
-    name: 'Contact',
-    path: '/contact',
-  },
-];
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [companyProfileOpen, setCompanyProfileOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-// =====================================================
-// DROPDOWN ITEMS
-// =====================================================
+  /* =========================================================
+     INDUSTRIES
+  ========================================================= */
 
-const dropdownItems = {
-  Industries: [
+  const industries = [
     {
       name: 'Retail',
       path: '/industries/retail',
@@ -77,106 +53,91 @@ const dropdownItems = {
       name: 'Manufacturing',
       path: '/industries/manufacturing',
     },
-  ],
-};
+  ];
 
-// =====================================================
-// HEADER
-// =====================================================
+  /* =========================================================
+     CLOSE EVERYTHING
+  ========================================================= */
 
-export default function Header() {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchModalOpen, setSearchModalOpen] = useState(false);
-  const [companyProfileOpen, setCompanyProfileOpen] =
-    useState(false);
-  const [activeDropdown, setActiveDropdown] =
-    useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const handleNavClick = () => {
+    setMobileMenuOpen(false);
+    setActiveDropdown(null);
+    setSearchModalOpen(false);
+    setCompanyProfileOpen(false);
+  };
 
-  // ===================================================
-  // SCROLL HANDLER
-  // ===================================================
+  /* =========================================================
+     COMPANY PROFILE EVENT
+  ========================================================= */
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-
-    handleScroll();
-
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener(
-        'scroll',
-        handleScroll
-      );
-    };
-  }, []);
-
-  // ===================================================
-  // COMPANY PROFILE EVENT
-  // ===================================================
-
-  useEffect(() => {
-    const handleOpenCompanyProfile = () => {
+    const openProfile = () => {
       setCompanyProfileOpen(true);
       setMobileMenuOpen(false);
-      setSearchModalOpen(false);
       setActiveDropdown(null);
     };
 
     window.addEventListener(
       'open-company-profile',
-      handleOpenCompanyProfile
+      openProfile
     );
 
     return () => {
       window.removeEventListener(
         'open-company-profile',
-        handleOpenCompanyProfile
+        openProfile
       );
     };
   }, []);
 
-  // ===================================================
-  // ESCAPE KEY
-  // ===================================================
+  /* =========================================================
+     CLOSE MENUS WHEN ROUTE CHANGES
+  ========================================================= */
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    setMobileMenuOpen(false);
+    setActiveDropdown(null);
+    setSearchModalOpen(false);
+  }, [location.pathname]);
+
+  /* =========================================================
+     ESCAPE KEY
+  ========================================================= */
+
+  useEffect(() => {
+    const handleEscape = (event) => {
       if (event.key === 'Escape') {
-        setCompanyProfileOpen(false);
-        setSearchModalOpen(false);
         setMobileMenuOpen(false);
         setActiveDropdown(null);
+        setSearchModalOpen(false);
+        setCompanyProfileOpen(false);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleEscape);
 
     return () => {
-      window.removeEventListener(
+      document.removeEventListener(
         'keydown',
-        handleKeyDown
+        handleEscape
       );
     };
   }, []);
 
-  // ===================================================
-  // BODY SCROLL LOCK
-  // ===================================================
+  /* =========================================================
+     BODY SCROLL LOCK
+  ========================================================= */
 
   useEffect(() => {
-    const shouldLock =
+    if (
       mobileMenuOpen ||
       searchModalOpen ||
-      companyProfileOpen;
-
-    document.body.style.overflow = shouldLock
-      ? 'hidden'
-      : '';
+      companyProfileOpen
+    ) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
 
     return () => {
       document.body.style.overflow = '';
@@ -187,756 +148,512 @@ export default function Header() {
     companyProfileOpen,
   ]);
 
-  // ===================================================
-  // CLOSE MOBILE MENU
-  // ===================================================
-
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-    setActiveDropdown(null);
-  };
-
-  // ===================================================
-  // SEARCH
-  // ===================================================
+  /* =========================================================
+     SEARCH
+  ========================================================= */
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
 
-    const query = searchQuery.trim();
+    const query = searchQuery.trim().toLowerCase();
 
     if (!query) {
       return;
     }
 
-    console.log('Search:', query);
-
     setSearchModalOpen(false);
+    setSearchQuery('');
+
+    if (query.includes('about')) {
+      window.location.href = '/about';
+    } else if (query.includes('industry')) {
+      window.location.href = '/industries';
+    } else if (
+      query.includes('use case') ||
+      query.includes('usecase') ||
+      query.includes('ai')
+    ) {
+      window.location.href = '/use-cases';
+    } else if (query.includes('architecture')) {
+      window.location.href = '/architecture';
+    } else if (query.includes('business')) {
+      window.location.href = '/business-value';
+    } else if (query.includes('contact')) {
+      window.location.href = '/contact';
+    } else if (
+      query.includes('appointment') ||
+      query.includes('schedule')
+    ) {
+      window.location.href = '/schedule-appointment';
+    }
   };
 
-  // ===================================================
-  // CLOSE MODALS
-  // ===================================================
+  /* =========================================================
+     NAVIGATION CLASS
+  ========================================================= */
 
-  const closeCompanyProfile = () => {
-    setCompanyProfileOpen(false);
+  const navLinkClass = ({ isActive }) =>
+    `px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+      isActive
+        ? 'text-cyan-400'
+        : 'text-gray-300 hover:text-white'
+    }`;
+
+  /* =========================================================
+     INDUSTRIES CLICK
+  ========================================================= */
+
+  const toggleIndustries = () => {
+    setActiveDropdown(
+      activeDropdown === 'industries'
+        ? null
+        : 'industries'
+    );
   };
 
-  const closeSearch = () => {
-    setSearchModalOpen(false);
-  };
-
-  // ===================================================
-  // APPOINTMENT NAVIGATION
-  // ===================================================
-
-  const handleAppointmentClick = () => {
-    setMobileMenuOpen(false);
-    setActiveDropdown(null);
-    setSearchModalOpen(false);
-    setCompanyProfileOpen(false);
-  };
-
-  // ===================================================
-  // RENDER
-  // ===================================================
+  /* =========================================================
+     COMPONENT
+  ========================================================= */
 
   return (
     <>
-      {/* =================================================
-          MAIN HEADER
-      ================================================= */}
-
-      <header
-        className={`
-          fixed
-          top-0
-          left-0
-          right-0
-          z-[9999]
-          w-full
-          transition-all
-          duration-300
-          ${
-            isScrolled
-              ? `
-                bg-[#080b11]/95
-                backdrop-blur-xl
-                border-b
-                border-white/10
-                shadow-[0_10px_40px_rgba(0,0,0,0.35)]
-              `
-              : `
-                bg-[#080b11]/90
-                backdrop-blur-lg
-                border-b
-                border-white/10
-              `
-          }
-        `}
-      >
-        <div
-          className="
-            w-full
-            max-w-[1600px]
-            mx-auto
-            px-5
-            sm:px-8
-            lg:px-10
-          "
-        >
-          <div
-            className="
-              min-h-[76px]
-              flex
-              items-center
-              justify-between
-              gap-4
-            "
-          >
-            {/* =================================================
-                LOGO
-            ================================================= */}
-
-            <Link
-              to="/"
-              onClick={closeMobileMenu}
-              className="
-                group
-                flex
-                items-center
-                gap-3
-                shrink-0
-              "
-            >
-              <div
-                className="
-                  relative
-                  w-10
-                  h-10
-                  rounded-xl
-                  p-[1px]
-                  bg-gradient-to-br
-                  from-[#ff6b6b]
-                  to-[#4cd6ff]
-                  shadow-[0_0_25px_rgba(76,214,255,0.2)]
-                "
-              >
-                <div
-                  className="
-                    w-full
-                    h-full
-                    rounded-xl
-                    bg-[#090c12]
-                    flex
-                    items-center
-                    justify-center
-                  "
-                >
-                  <Cpu
-                    className="
-                      w-5
-                      h-5
-                      text-[#4cd6ff]
-                      group-hover:scale-110
-                      transition-transform
-                    "
-                  />
-                </div>
-              </div>
-
-              <div className="hidden sm:block">
-                <div
-                  className="
-                    text-white
-                    font-extrabold
-                    text-lg
-                    leading-none
-                    tracking-tight
-                  "
-                >
-                  HamaraShops
-                  <span className="text-[#4cd6ff]">
-                    .ai
-                  </span>
-                </div>
-
-                <div
-                  className="
-                    text-[9px]
-                    text-[#7f8aa3]
-                    uppercase
-                    tracking-[0.22em]
-                    mt-1
-                  "
-                >
-                  Intelligence • Innovation
-                </div>
-              </div>
-            </Link>
-
-            {/* =================================================
-                DESKTOP NAVIGATION
-            ================================================= */}
-
-            <nav
-              className="
-                hidden
-                lg:flex
-                items-center
-                justify-center
-                gap-1
-                flex-1
-              "
-            >
-              {navLinks.map((link) => {
-                const hasDropdown = Boolean(
-                  dropdownItems[link.name]
-                );
-
-                return (
-                  <div
-                    key={link.name}
-                    className="relative"
-                    onMouseEnter={() => {
-                      if (hasDropdown) {
-                        setActiveDropdown(link.name);
-                      }
-                    }}
-                    onMouseLeave={() => {
-                      if (hasDropdown) {
-                        setActiveDropdown(null);
-                      }
-                    }}
-                  >
-                    <NavLink
-                      to={link.path}
-                      className={({ isActive }) => `
-                        flex
-                        items-center
-                        gap-1
-                        px-3
-                        py-2.5
-                        rounded-lg
-                        text-sm
-                        font-medium
-                        whitespace-nowrap
-                        transition-all
-                        duration-200
-                        ${
-                          isActive
-                            ? `
-                              text-white
-                              bg-white/[0.08]
-                            `
-                            : `
-                              text-[#b2bdcf]
-                              hover:text-white
-                              hover:bg-white/[0.06]
-                            `
-                        }
-                      `}
-                    >
-                      {link.name}
-
-                      {hasDropdown && (
-                        <ChevronDown
-                          className={`
-                            w-3.5
-                            h-3.5
-                            transition-transform
-                            ${
-                              activeDropdown ===
-                              link.name
-                                ? 'rotate-180'
-                                : ''
-                            }
-                          `}
-                        />
-                      )}
-                    </NavLink>
-
-                    {/* =================================================
-                        DESKTOP DROPDOWN
-                    ================================================= */}
-
-                    {hasDropdown &&
-                      activeDropdown === link.name && (
-                        <div
-                          className="
-                            absolute
-                            top-full
-                            left-0
-                            pt-2
-                            min-w-[235px]
-                          "
-                        >
-                          <div
-                            className="
-                              p-2
-                              rounded-xl
-                              border
-                              border-white/10
-                              bg-[#0b0f16]/98
-                              backdrop-blur-xl
-                              shadow-[0_20px_60px_rgba(0,0,0,0.5)]
-                            "
-                          >
-                            {dropdownItems[
-                              link.name
-                            ].map((item) => (
-                              <Link
-                                key={item.name}
-                                to={item.path}
-                                className="
-                                  flex
-                                  items-center
-                                  justify-between
-                                  px-4
-                                  py-3
-                                  rounded-lg
-                                  text-sm
-                                  text-[#aeb8cc]
-                                  hover:text-white
-                                  hover:bg-white/[0.06]
-                                  transition-all
-                                "
-                              >
-                                <span>
-                                  {item.name}
-                                </span>
-
-                                <ArrowUpRight
-                                  className="
-                                    w-4
-                                    h-4
-                                    text-[#4cd6ff]
-                                  "
-                                />
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                  </div>
-                );
-              })}
-            </nav>
-
-            {/* =================================================
-                DESKTOP RIGHT ACTIONS
-            ================================================= */}
-
-            <div
-              className="
-                hidden
-                lg:flex
-                items-center
-                gap-2
-                shrink-0
-              "
-            >
-              {/* SEARCH */}
-
-              <button
-                type="button"
-                onClick={() =>
-                  setSearchModalOpen(true)
-                }
-                className="
-                  w-10
-                  h-10
-                  rounded-lg
-                  border
-                  border-white/10
-                  bg-white/[0.04]
-                  flex
-                  items-center
-                  justify-center
-                  text-[#aeb8cc]
-                  hover:text-white
-                  hover:border-[#4cd6ff]/40
-                  hover:bg-[#4cd6ff]/10
-                  transition-all
-                "
-                aria-label="Search"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-
-              {/* =================================================
-                  SCHEDULE APPOINTMENT
-              ================================================= */}
-
-              <Link
-                to="/schedule-appointment"
-                onClick={handleAppointmentClick}
-                className="
-                  group
-                  flex
-                  items-center
-                  gap-2
-                  px-4
-                  py-2.5
-                  rounded-xl
-                  bg-gradient-to-r
-                  from-[#ff6b6b]
-                  to-[#ff8585]
-                  text-[#50000a]
-                  font-bold
-                  text-sm
-                  whitespace-nowrap
-                  shadow-[0_0_25px_rgba(255,107,107,0.2)]
-                  hover:shadow-[0_0_35px_rgba(255,107,107,0.4)]
-                  hover:scale-[1.02]
-                  transition-all
-                  duration-300
-                "
-              >
-                <CalendarDays
-                  className="
-                    w-4
-                    h-4
-                    group-hover:rotate-6
-                    transition-transform
-                  "
-                />
-
-                <span>
-                  Schedule Appointment
-                </span>
-
-                <ArrowUpRight
-                  className="
-                    w-4
-                    h-4
-                    group-hover:translate-x-0.5
-                    group-hover:-translate-y-0.5
-                    transition-transform
-                  "
-                />
-              </Link>
-            </div>
-
-            {/* =================================================
-                MOBILE / TABLET ACTIONS
-            ================================================= */}
-
-            <div
-              className="
-                flex
-                lg:hidden
-                items-center
-                gap-2
-              "
-            >
-              {/* MOBILE SEARCH */}
-
-              <button
-                type="button"
-                onClick={() =>
-                  setSearchModalOpen(true)
-                }
-                className="
-                  w-10
-                  h-10
-                  rounded-lg
-                  border
-                  border-white/10
-                  bg-white/[0.04]
-                  flex
-                  items-center
-                  justify-center
-                  text-[#aeb8cc]
-                  hover:text-white
-                  transition-all
-                "
-                aria-label="Search"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-
-              {/* MOBILE MENU */}
-
-              <button
-                type="button"
-                onClick={() =>
-                  setMobileMenuOpen(
-                    !mobileMenuOpen
-                  )
-                }
-                className="
-                  w-10
-                  h-10
-                  rounded-lg
-                  border
-                  border-white/10
-                  bg-white/[0.04]
-                  flex
-                  items-center
-                  justify-center
-                  text-white
-                  hover:border-[#4cd6ff]/40
-                  transition-all
-                "
-                aria-label={
-                  mobileMenuOpen
-                    ? 'Close menu'
-                    : 'Open menu'
-                }
-              >
-                {mobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* =====================================================
-          MOBILE MENU
+          HEADER
       ===================================================== */}
 
-      {mobileMenuOpen && (
-        <div
-          className="
-            fixed
-            inset-0
-            z-[9990]
-            lg:hidden
-            bg-black/70
-            backdrop-blur-md
-          "
-          onClick={closeMobileMenu}
-        >
-          <div
-            className="
-              absolute
-              top-[76px]
-              left-0
-              right-0
-              max-h-[calc(100vh-76px)]
-              overflow-y-auto
-              bg-[#090c12]
-              border-t
-              border-white/10
-              shadow-2xl
-            "
-            onClick={(event) =>
-              event.stopPropagation()
-            }
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-slate-950/90 backdrop-blur-xl">
+
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+
+          {/* =================================================
+              LOGO + HAMARASHOPS.AI TEXT
+          ================================================= */}
+
+          <Link
+            to="/"
+            onClick={handleNavClick}
+            className="flex items-center gap-3 shrink-0"
           >
-            <div className="p-5">
-              {/* MOBILE NAV */}
 
-              <div className="space-y-1">
-                {navLinks.map((link) => {
-                  const hasDropdown = Boolean(
-                    dropdownItems[link.name]
-                  );
+            {/* LOGO FROM PUBLIC FOLDER */}
 
-                  return (
-                    <div key={link.name}>
-                      <div className="flex gap-2">
-                        <NavLink
-                          to={link.path}
-                          onClick={() => {
-                            if (!hasDropdown) {
-                              closeMobileMenu();
-                            }
-                          }}
-                          className="
-                            flex-1
-                            px-4
-                            py-3.5
-                            rounded-xl
-                            text-base
-                            font-semibold
-                            text-[#aeb8cc]
-                            hover:text-white
-                            hover:bg-white/[0.06]
-                          "
-                        >
-                          {link.name}
-                        </NavLink>
+            <img
+              src="/logo.png"
+              alt="HamaraShops.ai Logo"
+              className="h-10 w-10 object-contain"
+            />
 
-                        {hasDropdown && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setActiveDropdown(
-                                activeDropdown ===
-                                  link.name
-                                  ? null
-                                  : link.name
-                              )
-                            }
-                            className="
-                              w-12
-                              rounded-xl
-                              border
-                              border-white/10
-                              text-[#aeb8cc]
-                              hover:text-white
-                            "
-                            aria-label={`Toggle ${link.name} submenu`}
-                          >
-                            <ChevronDown
-                              className={`
-                                w-4
-                                h-4
-                                mx-auto
-                                transition-transform
-                                ${
-                                  activeDropdown ===
-                                  link.name
-                                    ? 'rotate-180'
-                                    : ''
-                                }
-                              `}
-                            />
-                          </button>
-                        )}
-                      </div>
+            {/* COMPANY NAME */}
 
-                      {/* MOBILE DROPDOWN */}
+            <div className="flex items-center">
+              <span className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+                HamaraShops
+                <span className="text-cyan-400">
+                  .ai
+                </span>
+              </span>
+            </div>
 
-                      {hasDropdown &&
-                        activeDropdown ===
-                          link.name && (
-                          <div
-                            className="
-                              ml-4
-                              pl-3
-                              border-l
-                              border-[#4cd6ff]/20
-                              mt-1
-                              mb-2
-                            "
-                          >
-                            {dropdownItems[
-                              link.name
-                            ].map((item) => (
-                              <Link
-                                key={item.name}
-                                to={item.path}
-                                onClick={
-                                  closeMobileMenu
-                                }
-                                className="
-                                  flex
-                                  items-center
-                                  justify-between
-                                  px-4
-                                  py-3
-                                  text-sm
-                                  text-[#8995aa]
-                                  hover:text-white
-                                "
-                              >
-                                <span>
-                                  {item.name}
-                                </span>
+          </Link>
 
-                                <ArrowUpRight
-                                  className="
-                                    w-4
-                                    h-4
-                                    text-[#4cd6ff]
-                                  "
-                                />
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                    </div>
-                  );
-                })}
-              </div>
+          {/* =================================================
+              DESKTOP NAVIGATION
+          ================================================= */}
 
-              {/* =================================================
-                  MOBILE APPOINTMENT
-              ================================================= */}
+          <nav className="hidden items-center gap-1 lg:flex">
 
-              <div
-                className="
-                  mt-6
-                  pt-6
-                  border-t
-                  border-white/10
-                "
+            {/* HOME */}
+
+            <NavLink
+              to="/"
+              className={navLinkClass}
+              onClick={handleNavClick}
+            >
+              Home
+            </NavLink>
+
+            {/* ABOUT */}
+
+            <NavLink
+              to="/about"
+              className={navLinkClass}
+              onClick={handleNavClick}
+            >
+              About
+            </NavLink>
+
+            {/* =================================================
+                INDUSTRIES
+            ================================================= */}
+
+            <div className="relative">
+
+              <button
+                type="button"
+                onClick={toggleIndustries}
+                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:text-white"
               >
-                <Link
-                  to="/schedule-appointment"
-                  onClick={handleAppointmentClick}
-                  className="
-                    w-full
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    px-5
-                    py-4
-                    rounded-xl
-                    bg-gradient-to-r
-                    from-[#ff6b6b]
-                    to-[#ff8585]
-                    text-[#50000a]
-                    font-bold
-                    shadow-[0_0_30px_rgba(255,107,107,0.2)]
-                  "
-                >
-                  <CalendarDays className="w-5 h-5" />
+                Industries
 
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    activeDropdown === 'industries'
+                      ? 'rotate-180'
+                      : ''
+                  }`}
+                />
+              </button>
+
+              {/* DROPDOWN */}
+
+              {activeDropdown === 'industries' && (
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                    y: 8,
+                  }}
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  className="absolute left-0 top-full z-[60] mt-2 w-80 overflow-hidden rounded-xl border border-white/10 bg-slate-900 shadow-2xl"
+                >
+
+                  <div className="p-2">
+
+                    {/* ALL INDUSTRIES */}
+
+                    <Link
+                      to="/industries"
+                      onClick={handleNavClick}
+                      className="mb-1 flex items-center justify-between rounded-lg px-4 py-3 text-sm font-semibold text-cyan-400 transition hover:bg-white/5"
+                    >
+                      <span>
+                        All Industries
+                      </span>
+
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+
+                    <div className="my-1 border-t border-white/10" />
+
+                    {/* INDUSTRY LINKS */}
+
+                    {industries.map((industry) => (
+                      <Link
+                        key={industry.path}
+                        to={industry.path}
+                        onClick={handleNavClick}
+                        className="group flex items-center justify-between rounded-lg px-4 py-3 text-sm text-gray-300 transition hover:bg-white/5 hover:text-cyan-400"
+                      >
+                        <span>
+                          {industry.name}
+                        </span>
+
+                        <ArrowUpRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                      </Link>
+                    ))}
+
+                  </div>
+                </motion.div>
+              )}
+
+            </div>
+
+            {/* AI USE CASES */}
+
+            <NavLink
+              to="/use-cases"
+              className={navLinkClass}
+              onClick={handleNavClick}
+            >
+              AI Use Cases
+            </NavLink>
+
+            {/* AI ARCHITECTURE */}
+
+            <NavLink
+              to="/architecture"
+              className={navLinkClass}
+              onClick={handleNavClick}
+            >
+              AI Architecture
+            </NavLink>
+
+            {/* BUSINESS VALUE */}
+
+            <NavLink
+              to="/business-value"
+              className={navLinkClass}
+              onClick={handleNavClick}
+            >
+              Business Value
+            </NavLink>
+
+            {/* CONTACT */}
+
+            <NavLink
+              to="/contact"
+              className={navLinkClass}
+              onClick={handleNavClick}
+            >
+              Contact
+            </NavLink>
+
+          </nav>
+
+          {/* =================================================
+              DESKTOP ACTIONS
+          ================================================= */}
+
+          <div className="hidden items-center gap-3 lg:flex">
+
+            {/* SEARCH */}
+
+            <button
+              type="button"
+              onClick={() => {
+                setSearchModalOpen(true);
+              }}
+              className="rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-white"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
+            {/* LINKEDIN */}
+
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-cyan-400"
+            >
+              <Linkedin className="h-5 w-5" />
+            </a>
+
+            {/* APPOINTMENT */}
+
+            <Link
+              to="/schedule-appointment"
+              onClick={handleNavClick}
+              className="group flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+            >
+              <CalendarDays className="h-4 w-4" />
+
+              Schedule Appointment
+
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
+
+          </div>
+
+          {/* =================================================
+              MOBILE BUTTONS
+          ================================================= */}
+
+          <div className="flex items-center gap-2 lg:hidden">
+
+            {/* MOBILE SEARCH */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setSearchModalOpen(true)
+              }
+              className="rounded-lg p-2 text-gray-300 hover:bg-white/10 hover:text-white"
+              aria-label="Search"
+            >
+              <Search className="h-5 w-5" />
+            </button>
+
+            {/* MOBILE MENU */}
+
+            <button
+              type="button"
+              onClick={() =>
+                setMobileMenuOpen(!mobileMenuOpen)
+              }
+              className="rounded-lg p-2 text-gray-300 hover:bg-white/10 hover:text-white"
+              aria-label="Menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+
+          </div>
+
+        </div>
+
+        {/* ===================================================
+            MOBILE MENU
+        =================================================== */}
+
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{
+              opacity: 0,
+              height: 0,
+            }}
+            animate={{
+              opacity: 1,
+              height: 'auto',
+            }}
+            className="border-t border-white/10 bg-slate-950 lg:hidden"
+          >
+
+            <div className="max-h-[calc(100vh-80px)] overflow-y-auto px-4 py-5">
+
+              <div className="flex flex-col">
+
+                {/* HOME */}
+
+                <NavLink
+                  to="/"
+                  className={navLinkClass}
+                  onClick={handleNavClick}
+                >
+                  Home
+                </NavLink>
+
+                {/* ABOUT */}
+
+                <NavLink
+                  to="/about"
+                  className={navLinkClass}
+                  onClick={handleNavClick}
+                >
+                  About
+                </NavLink>
+
+                {/* =================================================
+                    MOBILE INDUSTRIES
+                ================================================= */}
+
+                <button
+                  type="button"
+                  onClick={toggleIndustries}
+                  className="flex w-full items-center justify-between px-3 py-3 text-sm font-medium text-gray-300"
+                >
                   <span>
-                    Schedule Appointment
+                    Industries
                   </span>
 
-                  <ArrowUpRight className="w-4 h-4" />
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      activeDropdown === 'industries'
+                        ? 'rotate-180'
+                        : ''
+                    }`}
+                  />
+                </button>
+
+                {activeDropdown === 'industries' && (
+                  <div className="ml-4 border-l border-white/10 pl-3">
+
+                    <Link
+                      to="/industries"
+                      onClick={handleNavClick}
+                      className="block px-3 py-2.5 text-sm font-semibold text-cyan-400"
+                    >
+                      All Industries
+                    </Link>
+
+                    {industries.map((industry) => (
+                      <Link
+                        key={industry.path}
+                        to={industry.path}
+                        onClick={handleNavClick}
+                        className="block px-3 py-2.5 text-sm text-gray-400 transition hover:text-cyan-400"
+                      >
+                        {industry.name}
+                      </Link>
+                    ))}
+
+                  </div>
+                )}
+
+                {/* AI USE CASES */}
+
+                <NavLink
+                  to="/use-cases"
+                  className={navLinkClass}
+                  onClick={handleNavClick}
+                >
+                  AI Use Cases
+                </NavLink>
+
+                {/* AI ARCHITECTURE */}
+
+                <NavLink
+                  to="/architecture"
+                  className={navLinkClass}
+                  onClick={handleNavClick}
+                >
+                  AI Architecture
+                </NavLink>
+
+                {/* BUSINESS VALUE */}
+
+                <NavLink
+                  to="/business-value"
+                  className={navLinkClass}
+                  onClick={handleNavClick}
+                >
+                  Business Value
+                </NavLink>
+
+                {/* CONTACT */}
+
+                <NavLink
+                  to="/contact"
+                  className={navLinkClass}
+                  onClick={handleNavClick}
+                >
+                  Contact
+                </NavLink>
+
+                {/* APPOINTMENT */}
+
+                <Link
+                  to="/schedule-appointment"
+                  onClick={handleNavClick}
+                  className="mt-4 flex items-center justify-center gap-2 rounded-full bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950"
+                >
+                  <CalendarDays className="h-4 w-4" />
+
+                  Schedule Appointment
+
+                  <ArrowUpRight className="h-4 w-4" />
                 </Link>
-              </div>
 
-              {/* =================================================
-                  MOBILE LINKEDIN
-              ================================================= */}
+                {/* LINKEDIN */}
 
-              <div className="mt-5">
                 <a
                   href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="
-                    w-full
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    px-5
-                    py-3
-                    rounded-xl
-                    border
-                    border-[#0A66C2]/30
-                    bg-[#0A66C2]/10
-                    text-[#4da3ff]
-                    hover:text-white
-                    hover:bg-[#0A66C2]/20
-                    transition-all
-                  "
+                  className="mt-3 flex items-center justify-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-cyan-400"
                 >
-                  <Linkedin className="w-5 h-5" />
+                  <Linkedin className="h-4 w-4" />
 
-                  <span>LinkedIn</span>
+                  LinkedIn
 
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </a>
+
               </div>
+
             </div>
-          </div>
-        </div>
-      )}
+
+          </motion.div>
+        )}
+
+      </header>
 
       {/* =====================================================
           SEARCH MODAL
@@ -944,155 +661,82 @@ export default function Header() {
 
       {searchModalOpen && (
         <div
-          className="
-            fixed
-            inset-0
-            z-[10000]
-            bg-black/75
-            backdrop-blur-md
-            flex
-            items-start
-            justify-center
-            pt-[15vh]
-            px-5
-          "
-          onClick={closeSearch}
+          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/70 px-4 pt-24 backdrop-blur-sm"
+          onClick={() =>
+            setSearchModalOpen(false)
+          }
         >
-          <div
-            className="
-              w-full
-              max-w-2xl
-              rounded-2xl
-              border
-              border-white/10
-              bg-[#0b0f16]
-              p-6
-              shadow-[0_30px_100px_rgba(0,0,0,0.6)]
-            "
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              y: -20,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            className="w-full max-w-2xl rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl"
             onClick={(event) =>
               event.stopPropagation()
             }
           >
-            {/* SEARCH HEADER */}
 
-            <div
-              className="
-                flex
-                items-center
-                justify-between
-                mb-5
-              "
-            >
+            <div className="mb-5 flex items-center justify-between">
+
               <div>
-                <h2
-                  className="
-                    text-xl
-                    font-bold
-                    text-white
-                  "
-                >
+                <h2 className="text-xl font-semibold text-white">
                   Search HamaraShops.ai
                 </h2>
 
-                <p
-                  className="
-                    mt-1
-                    text-sm
-                    text-[#7f8aa3]
-                  "
-                >
-                  Search our AI solutions and
-                  services.
+                <p className="mt-1 text-sm text-gray-400">
+                  Search across our website
                 </p>
               </div>
 
               <button
                 type="button"
-                onClick={closeSearch}
-                className="
-                  w-9
-                  h-9
-                  rounded-lg
-                  border
-                  border-white/10
-                  flex
-                  items-center
-                  justify-center
-                  text-[#8b96aa]
-                  hover:text-white
-                  hover:bg-white/10
-                  transition-all
-                "
-                aria-label="Close search"
+                onClick={() =>
+                  setSearchModalOpen(false)
+                }
+                className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white"
               >
-                <X className="w-4 h-4" />
+                <X className="h-5 w-5" />
               </button>
+
             </div>
 
-            {/* SEARCH FORM */}
+            <form onSubmit={handleSearchSubmit}>
 
-            <form
-              onSubmit={handleSearchSubmit}
-              className="relative"
-            >
-              <Search
-                className="
-                  absolute
-                  left-4
-                  top-1/2
-                  -translate-y-1/2
-                  w-5
-                  h-5
-                  text-[#647086]
-                "
-              />
+              <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950 px-4 py-3">
 
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(event) =>
-                  setSearchQuery(
-                    event.target.value
-                  )
-                }
-                placeholder="Search..."
-                autoFocus
-                className="
-                  w-full
-                  h-14
-                  pl-12
-                  pr-28
-                  rounded-xl
-                  border
-                  border-white/10
-                  bg-[#06080d]
-                  text-white
-                  outline-none
-                  placeholder:text-[#59657a]
-                  focus:border-[#4cd6ff]/50
-                "
-              />
+                <Search className="h-5 w-5 text-gray-500" />
+
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) =>
+                    setSearchQuery(event.target.value)
+                  }
+                  placeholder="Search About, Industries, AI Use Cases..."
+                  autoFocus
+                  className="w-full bg-transparent text-white outline-none placeholder:text-gray-500"
+                />
+
+              </div>
 
               <button
                 type="submit"
-                className="
-                  absolute
-                  right-2
-                  top-2
-                  bottom-2
-                  px-5
-                  rounded-lg
-                  bg-[#ff6b6b]
-                  text-[#52000b]
-                  font-bold
-                  hover:bg-[#ff8585]
-                  transition-all
-                "
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400"
               >
+                <Search className="h-4 w-4" />
                 Search
               </button>
+
             </form>
-          </div>
+
+          </motion.div>
+
         </div>
       )}
 
@@ -1102,418 +746,109 @@ export default function Header() {
 
       {companyProfileOpen && (
         <div
-          className="
-            fixed
-            inset-0
-            z-[10001]
-            bg-black/80
-            backdrop-blur-md
-            flex
-            items-center
-            justify-center
-            px-5
-            py-8
-          "
-          onClick={closeCompanyProfile}
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 px-4 py-8 backdrop-blur-sm"
+          onClick={() =>
+            setCompanyProfileOpen(false)
+          }
         >
-          <div
-            className="
-              relative
-              w-full
-              max-w-5xl
-              max-h-[90vh]
-              overflow-y-auto
-              rounded-3xl
-              border
-              border-white/10
-              bg-[#090d14]
-              shadow-[0_40px_120px_rgba(0,0,0,0.7)]
-            "
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.95,
+              y: 20,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+            }}
+            className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-slate-950 shadow-2xl"
             onClick={(event) =>
               event.stopPropagation()
             }
           >
+
             {/* CLOSE */}
 
             <button
               type="button"
-              onClick={closeCompanyProfile}
-              className="
-                absolute
-                top-5
-                right-5
-                z-20
-                w-10
-                h-10
-                rounded-full
-                border
-                border-white/10
-                bg-black/60
-                flex
-                items-center
-                justify-center
-                text-white
-                hover:bg-white/10
-                transition-all
-              "
-              aria-label="Close company profile"
+              onClick={() =>
+                setCompanyProfileOpen(false)
+              }
+              className="absolute right-4 top-4 z-10 rounded-full bg-black/60 p-2 text-white hover:bg-black/80"
+              aria-label="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
             </button>
 
-            {/* VIDEO */}
+            {/* YOUTUBE VIDEO */}
 
-            <div
-              className="
-                relative
-                aspect-video
-                bg-black
-                rounded-t-3xl
-                overflow-hidden
-              "
-            >
+            <div className="aspect-video w-full bg-black">
+
               <iframe
                 src={YOUTUBE_URL}
                 title="HamaraShops.ai Company Profile"
-                className="
-                  absolute
-                  inset-0
-                  w-full
-                  h-full
-                "
-                allow="
-                  autoplay;
-                  encrypted-media;
-                  picture-in-picture
-                "
+                className="h-full w-full"
+                allow="autoplay; encrypted-media; picture-in-picture"
                 allowFullScreen
               />
+
             </div>
 
-            {/* CONTENT */}
+            {/* COMPANY INFORMATION */}
 
-            <div className="p-7 sm:p-10">
-              {/* TITLE + LINKEDIN */}
+            <div className="p-6 sm:p-8">
 
-              <div
-                className="
-                  flex
-                  flex-col
-                  sm:flex-row
-                  sm:items-center
-                  sm:justify-between
-                  gap-5
-                "
-              >
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
                 <div>
-                  <div
-                    className="
-                      inline-flex
-                      items-center
-                      gap-2
-                      px-3
-                      py-1
-                      rounded-full
-                      border
-                      border-[#ff6b6b]/20
-                      bg-[#ff6b6b]/5
-                      text-[#ffb3b0]
-                      text-xs
-                      font-mono
-                      uppercase
-                      tracking-widest
-                    "
-                  >
-                    <User className="w-3.5 h-3.5" />
 
-                    Company Profile
+                  <div className="mb-2 flex items-center gap-2">
+
+                    <Cpu className="h-5 w-5 text-cyan-400" />
+
+                    <span className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                      Intelligence • Innovation
+                    </span>
+
                   </div>
 
-                  <h2
-                    className="
-                      mt-4
-                      text-3xl
-                      sm:text-4xl
-                      font-extrabold
-                      text-white
-                    "
-                  >
-                    HamaraShops
-                    <span className="text-[#4cd6ff]">
-                      .ai
-                    </span>
+                  <h2 className="text-2xl font-bold text-white sm:text-3xl">
+                    HamaraShops.ai
                   </h2>
 
-                  <p
-                    className="
-                      mt-2
-                      text-[#8e9ab0]
-                    "
-                  >
-                    Intelligence • Innovation •
-                    Transformation
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+                    AI-powered digital solutions designed to
+                    help organizations innovate, automate and
+                    transform their business operations.
                   </p>
+
                 </div>
 
                 <a
                   href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="
-                    inline-flex
-                    items-center
-                    gap-2
-                    px-5
-                    py-3
-                    rounded-xl
-                    border
-                    border-[#0A66C2]/40
-                    bg-[#0A66C2]/10
-                    text-white
-                    font-semibold
-                    hover:bg-[#0A66C2]/20
-                    transition-all
-                  "
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-400 transition hover:bg-cyan-400/20"
                 >
-                  <Linkedin
-                    className="
-                      w-5
-                      h-5
-                      text-[#4da3ff]
-                    "
-                  />
+                  <Linkedin className="h-4 w-4" />
 
-                  <span>
-                    Connect on LinkedIn
-                  </span>
+                  LinkedIn
 
-                  <ExternalLink
-                    className="
-                      w-4
-                      h-4
-                      text-[#4cd6ff]
-                    "
-                  />
+                  <ExternalLink className="h-3.5 w-3.5" />
                 </a>
+
               </div>
 
-              {/* ABOUT */}
-
-              <div className="mt-8">
-                <h3
-                  className="
-                    text-xl
-                    font-bold
-                    text-white
-                    mb-3
-                  "
-                >
-                  About HamaraShops.ai
-                </h3>
-
-                <p
-                  className="
-                    text-[#aeb8cc]
-                    leading-relaxed
-                  "
-                >
-                  HamaraShops.ai is focused on
-                  building intelligent digital
-                  experiences using artificial
-                  intelligence, automation and
-                  modern technology. Our goal is to
-                  help organizations adopt practical,
-                  scalable and high-performance AI
-                  solutions.
-                </p>
-              </div>
-
-              {/* HIGHLIGHTS */}
-
-              <div
-                className="
-                  grid
-                  grid-cols-1
-                  sm:grid-cols-3
-                  gap-4
-                  mt-8
-                "
-              >
-                <div
-                  className="
-                    rounded-2xl
-                    border
-                    border-white/10
-                    bg-white/[0.025]
-                    p-5
-                  "
-                >
-                  <div
-                    className="
-                      text-[#4cd6ff]
-                      text-sm
-                    "
-                  >
-                    FOCUS
-                  </div>
-
-                  <div
-                    className="
-                      text-white
-                      font-bold
-                      mt-2
-                    "
-                  >
-                    Artificial Intelligence
-                  </div>
-                </div>
-
-                <div
-                  className="
-                    rounded-2xl
-                    border
-                    border-white/10
-                    bg-white/[0.025]
-                    p-5
-                  "
-                >
-                  <div
-                    className="
-                      text-[#ff6b6b]
-                      text-sm
-                    "
-                  >
-                    APPROACH
-                  </div>
-
-                  <div
-                    className="
-                      text-white
-                      font-bold
-                      mt-2
-                    "
-                  >
-                    Innovation & Automation
-                  </div>
-                </div>
-
-                <div
-                  className="
-                    rounded-2xl
-                    border
-                    border-white/10
-                    bg-white/[0.025]
-                    p-5
-                  "
-                >
-                  <div
-                    className="
-                      text-[#4cd6ff]
-                      text-sm
-                    "
-                  >
-                    VISION
-                  </div>
-
-                  <div
-                    className="
-                      text-white
-                      font-bold
-                      mt-2
-                    "
-                  >
-                    AI-Powered Future
-                  </div>
-                </div>
-              </div>
-
-              {/* TAGLINE */}
-
-              <div
-                className="
-                  mt-8
-                  p-6
-                  rounded-2xl
-                  border
-                  border-[#4cd6ff]/20
-                  text-center
-                  bg-gradient-to-r
-                  from-[#ff6b6b]/5
-                  via-transparent
-                  to-[#4cd6ff]/5
-                "
-              >
-                <p
-                  className="
-                    text-lg
-                    sm:text-xl
-                    font-extrabold
-                    text-transparent
-                    bg-clip-text
-                    bg-gradient-to-r
-                    from-[#ff6b6b]
-                    via-white
-                    to-[#4cd6ff]
-                  "
-                >
-                  HamaraShops.ai is an Application
-                  Player in the Race of AI
-                </p>
-              </div>
-
-              {/* FOOTER */}
-
-              <div
-                className="
-                  mt-8
-                  pt-6
-                  border-t
-                  border-white/10
-                  flex
-                  flex-col
-                  sm:flex-row
-                  items-center
-                  justify-between
-                  gap-4
-                "
-              >
-                <span
-                  className="
-                    text-xs
-                    text-[#667188]
-                  "
-                >
-                  © {new Date().getFullYear()}{' '}
-                  HamaraShops.ai. All rights
-                  reserved.
-                </span>
-
-                <a
-                  href={LINKEDIN_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-[#4da3ff]
-                    hover:text-white
-                    transition-colors
-                  "
-                >
-                  <Linkedin className="w-4 h-4" />
-
-                  <span>LinkedIn</span>
-
-                  <ExternalLink
-                    className="w-3.5 h-3.5"
-                  />
-                </a>
-              </div>
             </div>
-          </div>
+
+          </motion.div>
+
         </div>
       )}
     </>
   );
-}
+};
+
+export default Header;
