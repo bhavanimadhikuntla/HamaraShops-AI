@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -28,9 +29,11 @@ const Header = () => {
   const [companyProfileOpen, setCompanyProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  /* =========================================================
-     INDUSTRIES
-  ========================================================= */
+  /*
+   * =========================================================
+   * INDUSTRIES
+   * =========================================================
+   */
 
   const industries = [
     {
@@ -55,9 +58,11 @@ const Header = () => {
     },
   ];
 
-  /* =========================================================
-     CLOSE EVERYTHING
-  ========================================================= */
+  /*
+   * =========================================================
+   * CLOSE MENUS
+   * =========================================================
+   */
 
   const handleNavClick = () => {
     setMobileMenuOpen(false);
@@ -66,21 +71,21 @@ const Header = () => {
     setCompanyProfileOpen(false);
   };
 
-  /* =========================================================
-     COMPANY PROFILE EVENT
-  ========================================================= */
+  /*
+   * =========================================================
+   * COMPANY PROFILE EVENT
+   * =========================================================
+   */
 
   useEffect(() => {
     const openProfile = () => {
       setCompanyProfileOpen(true);
       setMobileMenuOpen(false);
       setActiveDropdown(null);
+      setSearchModalOpen(false);
     };
 
-    window.addEventListener(
-      'open-company-profile',
-      openProfile
-    );
+    window.addEventListener('open-company-profile', openProfile);
 
     return () => {
       window.removeEventListener(
@@ -90,9 +95,11 @@ const Header = () => {
     };
   }, []);
 
-  /* =========================================================
-     CLOSE MENUS WHEN ROUTE CHANGES
-  ========================================================= */
+  /*
+   * =========================================================
+   * CLOSE WHEN ROUTE CHANGES
+   * =========================================================
+   */
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -100,9 +107,11 @@ const Header = () => {
     setSearchModalOpen(false);
   }, [location.pathname]);
 
-  /* =========================================================
-     ESCAPE KEY
-  ========================================================= */
+  /*
+   * =========================================================
+   * ESCAPE KEY
+   * =========================================================
+   */
 
   useEffect(() => {
     const handleEscape = (event) => {
@@ -117,16 +126,15 @@ const Header = () => {
     document.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.removeEventListener(
-        'keydown',
-        handleEscape
-      );
+      document.removeEventListener('keydown', handleEscape);
     };
   }, []);
 
-  /* =========================================================
-     BODY SCROLL LOCK
-  ========================================================= */
+  /*
+   * =========================================================
+   * BODY SCROLL LOCK
+   * =========================================================
+   */
 
   useEffect(() => {
     if (
@@ -148,9 +156,11 @@ const Header = () => {
     companyProfileOpen,
   ]);
 
-  /* =========================================================
-     SEARCH
-  ========================================================= */
+  /*
+   * =========================================================
+   * SEARCH
+   * =========================================================
+   */
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -170,8 +180,7 @@ const Header = () => {
       window.location.href = '/industries';
     } else if (
       query.includes('use case') ||
-      query.includes('usecase') ||
-      query.includes('ai')
+      query.includes('usecase')
     ) {
       window.location.href = '/use-cases';
     } else if (query.includes('architecture')) {
@@ -188,20 +197,35 @@ const Header = () => {
     }
   };
 
-  /* =========================================================
-     NAVIGATION CLASS
-  ========================================================= */
+  /*
+   * =========================================================
+   * NAVIGATION STYLE
+   * =========================================================
+   */
 
   const navLinkClass = ({ isActive }) =>
-    `px-3 py-2 text-sm font-medium transition-colors duration-200 ${
-      isActive
-        ? 'text-cyan-400'
-        : 'text-gray-300 hover:text-white'
-    }`;
+    `
+      relative
+      rounded-full
+      px-5
+      py-2.5
+      text-[15px]
+      font-medium
+      whitespace-nowrap
+      transition-all
+      duration-200
+      ${
+        isActive
+          ? 'bg-gradient-to-r from-[#ff6b6b] to-[#ff8a3d] text-white shadow-md'
+          : 'text-gray-300 hover:text-white'
+      }
+    `;
 
-  /* =========================================================
-     INDUSTRIES CLICK
-  ========================================================= */
+  /*
+   * =========================================================
+   * INDUSTRIES DROPDOWN
+   * =========================================================
+   */
 
   const toggleIndustries = () => {
     setActiveDropdown(
@@ -211,46 +235,88 @@ const Header = () => {
     );
   };
 
-  /* =========================================================
-     COMPONENT
-  ========================================================= */
+  /*
+   * =========================================================
+   * COMPONENT
+   * =========================================================
+   */
 
   return (
     <>
       {/* =====================================================
-          HEADER
+          MAIN HEADER
       ===================================================== */}
 
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-slate-950/90 backdrop-blur-xl">
+      <header className="fixed left-0 right-0 top-4 z-50 px-3 sm:px-5 lg:px-6">
 
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div
+          className="
+            mx-auto
+            flex
+            h-[96px]
+            max-w-[1620px]
+            items-center
+            justify-between
+            rounded-[28px]
+            border
+            border-white/10
+            bg-[#0b0e12]/95
+            px-4
+            shadow-[0_10px_40px_rgba(0,0,0,0.25)]
+            backdrop-blur-xl
+            sm:px-6
+            lg:px-7
+          "
+        >
 
           {/* =================================================
-              LOGO + HAMARASHOPS.AI TEXT
+              LOGO
           ================================================= */}
 
           <Link
             to="/"
             onClick={handleNavClick}
-            className="flex items-center gap-3 shrink-0"
+            className="flex shrink-0 items-center gap-3"
           >
 
-            {/* LOGO FROM PUBLIC FOLDER */}
+            <div className="relative">
+              <img
+                src="/logo.png"
+                alt="HamaraShops.ai Logo"
+                className="
+                  h-12
+                  w-12
+                  rounded-xl
+                  object-contain
+                  sm:h-[50px]
+                  sm:w-[50px]
+                "
+              />
+            </div>
 
-            <img
-              src="/logo.png"
-              alt="HamaraShops.ai Logo"
-              className="h-10 w-10 object-contain"
-            />
-
-            {/* COMPANY NAME */}
-
-            <div className="flex items-center">
-              <span className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+            <div className="flex items-baseline">
+              <span
+                className="
+                  text-[22px]
+                  font-bold
+                  tracking-[-0.8px]
+                  text-white
+                  sm:text-[24px]
+                "
+              >
                 HamaraShops
-                <span className="text-cyan-400">
-                  .ai
-                </span>
+              </span>
+
+              <span
+                className="
+                  text-[22px]
+                  font-bold
+                  tracking-[-0.8px]
+                  text-[#ff6262]
+                  sm:text-[24px]
+                "
+              >
+                .ai
               </span>
             </div>
 
@@ -260,17 +326,19 @@ const Header = () => {
               DESKTOP NAVIGATION
           ================================================= */}
 
-          <nav className="hidden items-center gap-1 lg:flex">
-
-            {/* HOME */}
-
-            <NavLink
-              to="/"
-              className={navLinkClass}
-              onClick={handleNavClick}
-            >
-              Home
-            </NavLink>
+          <nav
+            className="
+              hidden
+              items-center
+              gap-1
+              rounded-full
+              border
+              border-white/10
+              bg-[#10141a]
+              p-1
+              lg:flex
+            "
+          >
 
             {/* ABOUT */}
 
@@ -283,7 +351,7 @@ const Header = () => {
             </NavLink>
 
             {/* =================================================
-                INDUSTRIES
+                INDUSTRIES DROPDOWN
             ================================================= */}
 
             <div className="relative">
@@ -291,20 +359,43 @@ const Header = () => {
               <button
                 type="button"
                 onClick={toggleIndustries}
-                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-300 transition-colors hover:text-white"
+                className="
+                  flex
+                  items-center
+                  gap-1
+                  rounded-full
+                  px-5
+                  py-2.5
+                  text-[15px]
+                  font-medium
+                  whitespace-nowrap
+                  text-gray-300
+                  transition
+                  duration-200
+                  hover:text-white
+                "
               >
                 Industries
 
                 <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${
-                    activeDropdown === 'industries'
-                      ? 'rotate-180'
-                      : ''
-                  }`}
+                  className={`
+                    h-3.5
+                    w-3.5
+                    transition-transform
+                    duration-200
+                    ${
+                      activeDropdown === 'industries'
+                        ? 'rotate-180'
+                        : ''
+                    }
+                  `}
                 />
               </button>
 
-              {/* DROPDOWN */}
+              {/* =================================================
+                  DESKTOP INDUSTRIES DROPDOWN
+                  ONLY THESE 5 OPTIONS
+              ================================================= */}
 
               {activeDropdown === 'industries' && (
                 <motion.div
@@ -316,45 +407,57 @@ const Header = () => {
                     opacity: 1,
                     y: 0,
                   }}
-                  className="absolute left-0 top-full z-[60] mt-2 w-80 overflow-hidden rounded-xl border border-white/10 bg-slate-900 shadow-2xl"
+                  className="
+                    absolute
+                    left-0
+                    top-full
+                    z-[70]
+                    mt-3
+                    w-80
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-[#11151b]
+                    p-2
+                    shadow-2xl
+                  "
                 >
 
-                  <div className="p-2">
-
-                    {/* ALL INDUSTRIES */}
-
+                  {industries.map((industry) => (
                     <Link
-                      to="/industries"
+                      key={industry.path}
+                      to={industry.path}
                       onClick={handleNavClick}
-                      className="mb-1 flex items-center justify-between rounded-lg px-4 py-3 text-sm font-semibold text-cyan-400 transition hover:bg-white/5"
+                      className="
+                        group
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3
+                        text-sm
+                        text-gray-300
+                        transition
+                        hover:bg-white/5
+                        hover:text-[#ff7272]
+                      "
                     >
-                      <span>
-                        All Industries
-                      </span>
+                      <span>{industry.name}</span>
 
-                      <ArrowUpRight className="h-4 w-4" />
+                      <ArrowUpRight
+                        className="
+                          h-4
+                          w-4
+                          opacity-0
+                          transition-opacity
+                          group-hover:opacity-100
+                        "
+                      />
                     </Link>
+                  ))}
 
-                    <div className="my-1 border-t border-white/10" />
-
-                    {/* INDUSTRY LINKS */}
-
-                    {industries.map((industry) => (
-                      <Link
-                        key={industry.path}
-                        to={industry.path}
-                        onClick={handleNavClick}
-                        className="group flex items-center justify-between rounded-lg px-4 py-3 text-sm text-gray-300 transition hover:bg-white/5 hover:text-cyan-400"
-                      >
-                        <span>
-                          {industry.name}
-                        </span>
-
-                        <ArrowUpRight className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                      </Link>
-                    ))}
-
-                  </div>
                 </motion.div>
               )}
 
@@ -403,7 +506,7 @@ const Header = () => {
           </nav>
 
           {/* =================================================
-              DESKTOP ACTIONS
+              RIGHT SIDE
           ================================================= */}
 
           <div className="hidden items-center gap-3 lg:flex">
@@ -412,70 +515,92 @@ const Header = () => {
 
             <button
               type="button"
-              onClick={() => {
-                setSearchModalOpen(true);
-              }}
-              className="rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-white"
+              onClick={() => setSearchModalOpen(true)}
               aria-label="Search"
+              className="
+                flex
+                h-12
+                w-12
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-white/15
+                bg-[#11151b]
+                text-gray-300
+                transition
+                duration-200
+                hover:border-white/30
+                hover:bg-[#171c23]
+                hover:text-white
+              "
             >
-              <Search className="h-5 w-5" />
+              <Search className="h-[19px] w-[19px]" />
             </button>
 
-            {/* LINKEDIN */}
-
-            <a
-              href={LINKEDIN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="rounded-full p-2 text-gray-300 transition hover:bg-white/10 hover:text-cyan-400"
-            >
-              <Linkedin className="h-5 w-5" />
-            </a>
-
-            {/* APPOINTMENT */}
+            {/* SCHEDULE APPOINTMENT */}
 
             <Link
               to="/schedule-appointment"
               onClick={handleNavClick}
-              className="group flex items-center gap-2 rounded-full bg-cyan-500 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+              className="
+                group
+                flex
+                h-12
+                items-center
+                gap-2
+                rounded-full
+                bg-gradient-to-r
+                from-[#ff6565]
+                to-[#ff8b3d]
+                px-6
+                text-[15px]
+                font-semibold
+                text-[#160b0b]
+                shadow-lg
+                transition-all
+                duration-200
+                hover:scale-[1.02]
+                hover:shadow-[0_8px_30px_rgba(255,110,80,0.25)]
+              "
             >
-              <CalendarDays className="h-4 w-4" />
+              <span>Schedule Appointment</span>
 
-              Schedule Appointment
-
-              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              <ArrowUpRight
+                className="
+                  h-[18px]
+                  w-[18px]
+                  transition-transform
+                  duration-200
+                  group-hover:-translate-y-0.5
+                  group-hover:translate-x-0.5
+                "
+              />
             </Link>
 
           </div>
 
           {/* =================================================
-              MOBILE BUTTONS
+              MOBILE MENU BUTTON
           ================================================= */}
 
-          <div className="flex items-center gap-2 lg:hidden">
-
-            {/* MOBILE SEARCH */}
-
-            <button
-              type="button"
-              onClick={() =>
-                setSearchModalOpen(true)
-              }
-              className="rounded-lg p-2 text-gray-300 hover:bg-white/10 hover:text-white"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-
-            {/* MOBILE MENU */}
+          <div className="flex items-center lg:hidden">
 
             <button
               type="button"
               onClick={() =>
                 setMobileMenuOpen(!mobileMenuOpen)
               }
-              className="rounded-lg p-2 text-gray-300 hover:bg-white/10 hover:text-white"
+              className="
+                rounded-xl
+                border
+                border-white/10
+                p-2.5
+                text-gray-300
+                transition
+                hover:bg-white/10
+                hover:text-white
+              "
               aria-label="Menu"
             >
               {mobileMenuOpen ? (
@@ -497,28 +622,28 @@ const Header = () => {
           <motion.div
             initial={{
               opacity: 0,
-              height: 0,
+              y: -10,
             }}
             animate={{
               opacity: 1,
-              height: 'auto',
+              y: 0,
             }}
-            className="border-t border-white/10 bg-slate-950 lg:hidden"
+            className="
+              mx-3
+              mt-2
+              overflow-hidden
+              rounded-2xl
+              border
+              border-white/10
+              bg-[#0b0e12]
+              shadow-2xl
+              lg:hidden
+            "
           >
 
-            <div className="max-h-[calc(100vh-80px)] overflow-y-auto px-4 py-5">
+            <div className="max-h-[calc(100vh-120px)] overflow-y-auto p-4">
 
-              <div className="flex flex-col">
-
-                {/* HOME */}
-
-                <NavLink
-                  to="/"
-                  className={navLinkClass}
-                  onClick={handleNavClick}
-                >
-                  Home
-                </NavLink>
+              <div className="flex flex-col gap-1">
 
                 {/* ABOUT */}
 
@@ -537,38 +662,70 @@ const Header = () => {
                 <button
                   type="button"
                   onClick={toggleIndustries}
-                  className="flex w-full items-center justify-between px-3 py-3 text-sm font-medium text-gray-300"
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    rounded-full
+                    px-5
+                    py-3
+                    text-left
+                    text-sm
+                    font-medium
+                    text-gray-300
+                    transition
+                    hover:bg-white/5
+                    hover:text-white
+                  "
                 >
-                  <span>
-                    Industries
-                  </span>
+                  <span>Industries</span>
 
                   <ChevronDown
-                    className={`h-4 w-4 transition-transform ${
-                      activeDropdown === 'industries'
-                        ? 'rotate-180'
-                        : ''
-                    }`}
+                    className={`
+                      h-4
+                      w-4
+                      transition-transform
+                      ${
+                        activeDropdown === 'industries'
+                          ? 'rotate-180'
+                          : ''
+                      }
+                    `}
                   />
                 </button>
 
-                {activeDropdown === 'industries' && (
-                  <div className="ml-4 border-l border-white/10 pl-3">
+                {/* =================================================
+                    MOBILE INDUSTRIES OPTIONS
+                    ONLY THESE 5
+                ================================================= */}
 
-                    <Link
-                      to="/industries"
-                      onClick={handleNavClick}
-                      className="block px-3 py-2.5 text-sm font-semibold text-cyan-400"
-                    >
-                      All Industries
-                    </Link>
+                {activeDropdown === 'industries' && (
+                  <div
+                    className="
+                      ml-3
+                      border-l
+                      border-white/10
+                      pl-3
+                    "
+                  >
 
                     {industries.map((industry) => (
                       <Link
                         key={industry.path}
                         to={industry.path}
                         onClick={handleNavClick}
-                        className="block px-3 py-2.5 text-sm text-gray-400 transition hover:text-cyan-400"
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2.5
+                          text-sm
+                          text-gray-400
+                          transition
+                          hover:bg-white/5
+                          hover:text-[#ff7272]
+                        "
                       >
                         {industry.name}
                       </Link>
@@ -617,12 +774,58 @@ const Header = () => {
                   Contact
                 </NavLink>
 
-                {/* APPOINTMENT */}
+                {/* SEARCH */}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchModalOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="
+                    mt-3
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-full
+                    border
+                    border-white/10
+                    px-5
+                    py-3
+                    text-sm
+                    font-medium
+                    text-gray-300
+                    transition
+                    hover:bg-white/5
+                    hover:text-white
+                  "
+                >
+                  <Search className="h-4 w-4" />
+                  Search
+                </button>
+
+                {/* SCHEDULE APPOINTMENT */}
 
                 <Link
                   to="/schedule-appointment"
                   onClick={handleNavClick}
-                  className="mt-4 flex items-center justify-center gap-2 rounded-full bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950"
+                  className="
+                    mt-2
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-full
+                    bg-gradient-to-r
+                    from-[#ff6565]
+                    to-[#ff8b3d]
+                    px-5
+                    py-3
+                    text-sm
+                    font-semibold
+                    text-[#160b0b]
+                  "
                 >
                   <CalendarDays className="h-4 w-4" />
 
@@ -637,7 +840,24 @@ const Header = () => {
                   href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 flex items-center justify-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-cyan-400"
+                  className="
+                    mt-2
+                    flex
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-full
+                    border
+                    border-white/10
+                    px-5
+                    py-3
+                    text-sm
+                    font-medium
+                    text-gray-300
+                    transition
+                    hover:bg-white/5
+                    hover:text-[#ff7272]
+                  "
                 >
                   <Linkedin className="h-4 w-4" />
 
@@ -661,10 +881,19 @@ const Header = () => {
 
       {searchModalOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-start justify-center bg-black/70 px-4 pt-24 backdrop-blur-sm"
-          onClick={() =>
-            setSearchModalOpen(false)
-          }
+          className="
+            fixed
+            inset-0
+            z-[100]
+            flex
+            items-start
+            justify-center
+            bg-black/70
+            px-4
+            pt-28
+            backdrop-blur-sm
+          "
+          onClick={() => setSearchModalOpen(false)}
         >
 
           <motion.div
@@ -676,7 +905,16 @@ const Header = () => {
               opacity: 1,
               y: 0,
             }}
-            className="w-full max-w-2xl rounded-2xl border border-white/10 bg-slate-900 p-6 shadow-2xl"
+            className="
+              w-full
+              max-w-2xl
+              rounded-2xl
+              border
+              border-white/10
+              bg-[#11151b]
+              p-6
+              shadow-2xl
+            "
             onClick={(event) =>
               event.stopPropagation()
             }
@@ -699,7 +937,15 @@ const Header = () => {
                 onClick={() =>
                   setSearchModalOpen(false)
                 }
-                className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white"
+                className="
+                  rounded-lg
+                  p-2
+                  text-gray-400
+                  transition
+                  hover:bg-white/10
+                  hover:text-white
+                "
+                aria-label="Close search"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -708,8 +954,19 @@ const Header = () => {
 
             <form onSubmit={handleSearchSubmit}>
 
-              <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950 px-4 py-3">
-
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-3
+                  rounded-xl
+                  border
+                  border-white/10
+                  bg-[#090c10]
+                  px-4
+                  py-3
+                "
+              >
                 <Search className="h-5 w-5 text-gray-500" />
 
                 <input
@@ -720,16 +977,39 @@ const Header = () => {
                   }
                   placeholder="Search About, Industries, AI Use Cases..."
                   autoFocus
-                  className="w-full bg-transparent text-white outline-none placeholder:text-gray-500"
+                  className="
+                    w-full
+                    bg-transparent
+                    text-white
+                    outline-none
+                    placeholder:text-gray-500
+                  "
                 />
-
               </div>
 
               <button
                 type="submit"
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400"
+                className="
+                  mt-4
+                  flex
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-gradient-to-r
+                  from-[#ff6565]
+                  to-[#ff8b3d]
+                  px-5
+                  py-3
+                  font-semibold
+                  text-[#160b0b]
+                  transition
+                  hover:opacity-90
+                "
               >
                 <Search className="h-4 w-4" />
+
                 Search
               </button>
 
@@ -746,7 +1026,18 @@ const Header = () => {
 
       {companyProfileOpen && (
         <div
-          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 px-4 py-8 backdrop-blur-sm"
+          className="
+            fixed
+            inset-0
+            z-[110]
+            flex
+            items-center
+            justify-center
+            bg-black/80
+            px-4
+            py-8
+            backdrop-blur-sm
+          "
           onClick={() =>
             setCompanyProfileOpen(false)
           }
@@ -763,7 +1054,17 @@ const Header = () => {
               scale: 1,
               y: 0,
             }}
-            className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-slate-950 shadow-2xl"
+            className="
+              relative
+              w-full
+              max-w-5xl
+              overflow-hidden
+              rounded-2xl
+              border
+              border-white/10
+              bg-[#0b0e12]
+              shadow-2xl
+            "
             onClick={(event) =>
               event.stopPropagation()
             }
@@ -776,7 +1077,18 @@ const Header = () => {
               onClick={() =>
                 setCompanyProfileOpen(false)
               }
-              className="absolute right-4 top-4 z-10 rounded-full bg-black/60 p-2 text-white hover:bg-black/80"
+              className="
+                absolute
+                right-4
+                top-4
+                z-10
+                rounded-full
+                bg-black/60
+                p-2
+                text-white
+                transition
+                hover:bg-black/80
+              "
               aria-label="Close"
             >
               <X className="h-5 w-5" />
@@ -800,15 +1112,32 @@ const Header = () => {
 
             <div className="p-6 sm:p-8">
 
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div
+                className="
+                  flex
+                  flex-col
+                  gap-5
+                  sm:flex-row
+                  sm:items-center
+                  sm:justify-between
+                "
+              >
 
                 <div>
 
                   <div className="mb-2 flex items-center gap-2">
 
-                    <Cpu className="h-5 w-5 text-cyan-400" />
+                    <Cpu className="h-5 w-5 text-[#ff7272]" />
 
-                    <span className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-400">
+                    <span
+                      className="
+                        text-sm
+                        font-semibold
+                        uppercase
+                        tracking-[0.2em]
+                        text-[#ff7272]
+                      "
+                    >
                       Intelligence • Innovation
                     </span>
 
@@ -830,7 +1159,24 @@ const Header = () => {
                   href={LINKEDIN_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-3 text-sm font-semibold text-cyan-400 transition hover:bg-cyan-400/20"
+                  className="
+                    inline-flex
+                    shrink-0
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-full
+                    border
+                    border-[#ff7272]/30
+                    bg-[#ff7272]/10
+                    px-5
+                    py-3
+                    text-sm
+                    font-semibold
+                    text-[#ff7272]
+                    transition
+                    hover:bg-[#ff7272]/20
+                  "
                 >
                   <Linkedin className="h-4 w-4" />
 
@@ -847,8 +1193,10 @@ const Header = () => {
 
         </div>
       )}
+
     </>
   );
 };
 
 export default Header;
+

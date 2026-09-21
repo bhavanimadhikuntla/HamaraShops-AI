@@ -7,6 +7,14 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
 
+  cloud:
+    gateway:
+      routes:
+        - id: business-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v1/**
+
 management:
   endpoints:
     web:

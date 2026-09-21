@@ -24,12 +24,6 @@
 			<artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
 		</dependency>
 
-		<!-- Spring Cloud LoadBalancer -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
-		</dependency>
-
 		<!-- Spring Boot Actuator for Health & Monitoring -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -72,3 +66,4 @@
 		</plugins>
 	</build>
 </project>
+
