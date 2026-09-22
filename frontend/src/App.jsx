@@ -35,7 +35,7 @@ import EthicsPolicy from './pages/EthicsPolicy';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import SalesTerms from './pages/SalesTerms';
 import NotFound from './pages/NotFound';
-
+import Chatbot from './components/common/Chatbot';
 import ScrollToTopButton from './components/common/ScrollToTopButton';
 import ScheduleAppointment from './pages/ScheduleAppointment';
 
@@ -71,6 +71,7 @@ export default function App() {
       </main>
       <Footer />
       <ScrollToTopButton />
+      <Chatbot/>
     </div>
   );
 }
