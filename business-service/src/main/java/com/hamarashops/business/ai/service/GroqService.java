@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -24,18 +25,24 @@ public class GroqService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String chat(String systemPrompt, String userMessage) {
+    @Value("${GROQ_API_KEY:}")
+    private String apiKey;
 
-        String apiKey = System.getenv("GROQ_API_KEY");
+    public String chat(String systemPrompt, String userMessage) {
 
         if (apiKey == null || apiKey.isBlank()) {
             throw new IllegalStateException(
-                    "GROQ_API_KEY is not configured."
+                    "GROQ_API_KEY is not configured. "
+                            + "Please create business-service/.env "
+                            + "using .env.example."
             );
         }
 
-        String escapedSystemPrompt = escapeJson(systemPrompt);
-        String escapedUserMessage = escapeJson(userMessage);
+        String escapedSystemPrompt =
+                escapeJson(systemPrompt);
+
+        String escapedUserMessage =
+                escapeJson(userMessage);
 
         String json = """
                 {
@@ -57,16 +64,25 @@ public class GroqService {
                 escapedUserMessage
         );
 
-        RequestBody body = RequestBody.create(json, JSON);
+        RequestBody body =
+                RequestBody.create(json, JSON);
 
-        Request request = new Request.Builder()
-                .url(GROQ_URL)
-                .post(body)
-                .addHeader("Authorization", "Bearer " + apiKey)
-                .addHeader("Content-Type", "application/json")
-                .build();
+        Request request =
+                new Request.Builder()
+                        .url(GROQ_URL)
+                        .post(body)
+                        .addHeader(
+                                "Authorization",
+                                "Bearer " + apiKey
+                        )
+                        .addHeader(
+                                "Content-Type",
+                                "application/json"
+                        )
+                        .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response =
+                     client.newCall(request).execute()) {
 
             if (!response.isSuccessful()) {
 
@@ -89,7 +105,8 @@ public class GroqService {
                 );
             }
 
-            String responseBody = response.body().string();
+            String responseBody =
+                    response.body().string();
 
             return extractContent(responseBody);
 
@@ -119,7 +136,8 @@ public class GroqService {
 
         try {
 
-            JsonNode root = objectMapper.readTree(json);
+            JsonNode root =
+                    objectMapper.readTree(json);
 
             JsonNode content =
                     root.path("choices")
@@ -127,9 +145,12 @@ public class GroqService {
                             .path("message")
                             .path("content");
 
-            if (content.isMissingNode() || content.isNull()) {
+            if (content.isMissingNode()
+                    || content.isNull()) {
+
                 throw new RuntimeException(
-                        "Could not read the content from Groq response."
+                        "Could not read the content "
+                                + "from Groq response."
                 );
             }
 
