@@ -12,49 +12,57 @@
 
 ---
 
-## 🌐 Live Production Endpoints
-
-| Service Name | Technology / Role | Live Production Cloud Run URL | Status |
-| :--- | :--- | :--- | :---: |
-| **Frontend SPA** | React 19 + Vite + Nginx | [frontend-27562154208.asia-south1.run.app](https://frontend-27562154208.asia-south1.run.app) | `PASS (200 OK)` |
-| **API Gateway** | Spring Cloud Gateway WebFlux | `https://api-gateway-27562154208.asia-south1.run.app` | `PASS (200 OK)` |
-| **Content Service** | Spring Boot REST API | `https://content-service-y3nfalli7a-el.a.run.app` | `PASS (200 OK)` |
-| **Business Service**| Spring Boot REST API | `https://business-service-27562154208.asia-south1.run.app` | `PASS (200 OK)` |
-| **Contact Service** | Spring Boot REST API | `https://contact-service-27562154208.asia-south1.run.app` | `PASS (200 OK)` |
-
----
-
 ## 🏗 System Architecture
 
 ```
-+-----------------------------------------------------------------------------------+
-|                                 CLIENT LAYER                                      |
-|                                                                                   |
-|      +--------------------------------------------------------------------+       |
-|      |                        React 19 SPA Frontend                       |       |
-|      |         URL: https://frontend-27562154208.asia-south1.run.app      |       |
-|      +----------------------------------+---------------------------------+       |
-+-----------------------------------------|-----------------------------------------+
-                                          | HTTPS / REST JSON
-                                          v
-+-----------------------------------------------------------------------------------+
-|                              API GATEWAY LAYER                                    |
-|                                                                                   |
-|      +--------------------------------------------------------------------+       |
-|      |                    Spring Cloud API Gateway                        |       |
-|      |        URL: https://api-gateway-27562154208.asia-south1.run.app   |       |
-|      |       CORS Validation | Path Predicate Matching | Direct HTTP      |       |
-|      +-----+----------------------------+---------------------------+-----+       |
-+------------|----------------------------|---------------------------|-------------+
-             |                            |                           |
-             | /api/v1/products/**        | /api/v1/industries/**     | /api/v1/contact/**
-             | /api/v1/solutions/**       | /api/v1/careers/**        |
-             v                            v                           v
-+------------------------+   +------------------------+   +------------------------+
-|    Content Service     |   |    Business Service    |   |    Contact Service     |
-|  (Catalog & Solutions) |   |  (Industries & Jobs)   |   | (Inquiries & Leads)    |
-| Cloud Run Microservice |   | Cloud Run Microservice |   | Cloud Run Microservice |
-+------------------------+   +------------------------+   +------------------------+
+                         ┌─────────────────────────┐
+                         │        USER / CLIENT    │
+                         └────────────┬────────────┘
+                                      │
+                                      ▼
+                         ┌─────────────────────────┐
+                         │    HAMARASHOPS WEBSITE  │
+                         │      React + Vite        │
+                         └────────────┬────────────┘
+                                      │
+                              REST / HTTP API
+                                      │
+                                      ▼
+                         ┌─────────────────────────┐
+                         │       API GATEWAY       │
+                         │       Spring Boot       │
+                         └────────────┬────────────┘
+                                      │
+                         ┌────────────┴────────────┐
+                         │                         │
+                         ▼                         ▼
+              ┌─────────────────────┐   ┌─────────────────────┐
+              │   BUSINESS SERVICE   │   │     AI SERVICE      │
+              │     Spring Boot      │   │ Python + LangGraph  │
+              └──────────┬──────────┘   │ LangChain + Groq    │
+                         │              └──────────┬──────────┘
+                         │                         │
+             ┌───────────┼───────────┐             ▼
+             │           │           │    ┌─────────────────────┐
+             ▼           ▼           ▼    │  ChatOrchestrator   │
+        ┌────────┐ ┌──────────┐ ┌────────┐│   Agent Router      │
+        │Industry│ │ Content  │ │Contact/│└──────────┬──────────┘
+        │  APIs  │ │   APIs   │ │Appoint.│           │
+        └────────┘ └──────────┘ └────────┘           │
+                                                     │
+                                  ┌──────────────────┼──────────────────┐
+                                  │                  │                  │
+                                  ▼                  ▼                  ▼
+                         ┌────────────────┐ ┌────────────────┐ ┌─────────────────┐
+                         │ Industry Agent │ │ Company Agent  │ │ Appointment     │
+                         │                │ │                │ │ Agent           │
+                         └───────┬────────┘ └───────┬────────┘ └────────┬────────┘
+                                 │                  │                   │
+                                 ▼                  ▼                   ▼
+                           Industry Data      Company Data       Appointment API
+                                                                        │
+                                                                        ▼
+                                                               Appointment Created
 ```
 
 ---
@@ -75,16 +83,62 @@
 ## 📁 Repository Directory Structure
 
 ```
-HamaraShops-Ai/
-├── api-gateway/            # Spring Cloud WebFlux API Gateway (Port 8080)
-├── business-service/       # Industries & Careers Microservice (Port 8082)
-├── contact-service/        # Lead Inquiries & Tracking Microservice (Port 8083)
-├── content-service/        # AI Products, Solutions & Services Microservice (Port 8081)
-└── frontend/               # React 19 + Vite Single Page Application (Port 5173 / Port 80)
+HamaraShops-AI/
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+|
+├── api-gateway/
+│    ├── src/
+│    └── pom.xml
+│
+├── business-service/
+│     ├── src/
+│ │     └── main/
+│ │         └── java/
+│ │            └── com/
+│ │               └── hamarashops/
+│ │                     └── business/
+│ │                           ├── content/
+│ │                           ├── industry/
+│ │                           └── contact/
+│ └── pom.xml
+│ ├── ai-service/
+│ ├── agents/
+│ ├── orchestrator/
+│ ├── graph/
+│ ├── models/
+│ ├── services/
+│ ├── app.py
+│ ├── requirements.txt
+│ └── .env
+│
+└── README.md
 ```
-
 ---
+🤖 Multi-Agent AI Architecture
 
+The AI service uses specialized agents rather than relying on a single general-purpose agent.
+
+The ChatOrchestrator acts as the central coordination layer.
+
+It analyzes the user's request and routes it to the appropriate specialized agent.
+
+                         User Query
+                             │
+                             ▼
+                    ChatOrchestrator
+                             │
+              ┌──────────────┼──────────────┐
+              │              │              │
+              ▼              ▼              ▼
+          Industry        Company      Appointment
+            Agent          Agent          Agent
+
+🧠 Agents
 ## 🛠 Technology Stack Details
 
 ### Backend Stack
@@ -100,6 +154,12 @@ HamaraShops-Ai/
 - **HTTP Client**: Axios `1.7.9`
 - **Styling & UI**: Tailwind CSS `3.4.17`, Framer Motion `12.4.3`, Lucide Icons `0.475.0`
 - **Production Web Server**: Nginx Alpine
+### AI Service
+-Python
+-LangChain
+-LangGraph
+-Groq
+-LLM-based agent orchestration
 
 ---
 
@@ -107,11 +167,11 @@ HamaraShops-Ai/
 
 | Microservice | HTTP Method | Gateway Endpoint Path | Description |
 | :--- | :---: | :--- | :--- |
-| **Content Service** | `GET` | `/api/v1/products` | Returns list of AI Product Suite offerings |
-| **Content Service** | `GET` | `/api/v1/products/{slug}` | Returns detailed product profile by slug |
-| **Content Service** | `GET` | `/api/v1/solutions` | Returns industry solution blueprints |
-| **Content Service** | `GET` | `/api/v1/services` | Returns enterprise consulting & integration services |
-| **Content Service** | `GET` | `/api/v1/case-studies` | Returns customer success stories & benchmarks |
+| **Business Service** | `GET` | `/api/v1/products` | Returns list of AI Product Suite offerings |
+| **Business Service** | `GET` | `/api/v1/products/{slug}` | Returns detailed product profile by slug |
+| **Business Service** | `GET` | `/api/v1/solutions` | Returns industry solution blueprints |
+| **Business Service** | `GET` | `/api/v1/services` | Returns enterprise consulting & integration services |
+| **Business Service** | `GET` | `/api/v1/case-studies` | Returns customer success stories & benchmarks |
 | **Business Service**| `GET` | `/api/v1/industries` | Returns active industry vertical solutions |
 | **Business Service**| `GET` | `/api/v1/careers` | Returns open engineering & AI job opportunities |
 | **Contact Service** | `POST`| `/api/v1/contact/inquire` | Accepts inquiry form submission & returns tracking receipt ID |
