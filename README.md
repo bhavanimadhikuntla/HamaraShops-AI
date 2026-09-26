@@ -295,7 +295,7 @@ What are AI use cases in manufacturing?
 How can Generative AI help financial services?
 
 **Data Flow**
-
+```
 industries.json 
 ↓ 
 BusinessContentServiceImpl 
@@ -309,7 +309,7 @@ Selected Industry Data
 GroqService
 ↓
 AI Response
-
+```
 The Industry Agent sends only the selected industry's information to the Groq model rather than sending the complete industry dataset.
 
 This helps reduce unnecessary prompt size and API token usage.
@@ -333,7 +333,7 @@ Can I schedule a consultation?
 The Appointment Agent works with the existing appointment/contact functionality in the Business Service.
 
 **Appointment Flow**
-
+```
 User 
 │ 
 ▼ 
@@ -353,6 +353,7 @@ Resend Email Service
 │ 
 ▼ 
 Appointment notification
+```
 ---
 
 ## 🎯 Chat Orchestrator
@@ -381,7 +382,7 @@ This approach separates responsibilities and makes the chatbot easier to maintai
 ## 🔗 API Architecture
 
 All frontend requests are routed through the API Gateway.
-
+```
 React Frontend 
 │ 
 ▼ 
@@ -390,7 +391,7 @@ Port 8080
 │ 
 ▼
 Business Service Port 8082
-
+```
 The gateway exposes the backend APIs under:
 /api/v1/**
 
@@ -557,7 +558,7 @@ One of the important design principles of the project is that the chatbot should
 This avoids maintaining separate copies of industry information in the frontend and chatbot.
 
 Similarly:
-
+```
 company.json 
 │ 
 ▼ 
@@ -566,7 +567,7 @@ ContentDataStore
 ├──────────────► Company API 
 |
 └──────────────► Company Agent
-
+```
 ---
 
 ## 🧩 Business Service
@@ -656,7 +657,7 @@ Use environment variables or a local .env configuration where appropriate.
 The AI agents use GroqService to communicate with the Groq API.
 
 **The general flow is:**
-
+```
 User Question 
 ↓ 
 ChatOrchestrator 
@@ -670,7 +671,7 @@ GroqService
 Groq API 
 ↓ 
 AI Response
-
+```
 The agents provide relevant backend information to the language model so that responses remain grounded in the application's data.
 
 ---
@@ -855,7 +856,7 @@ Appointment Agent   → Appointment requests
 **2. Single Source of Truth**
 
 Business information is maintained in backend datasets and services.
-
+```
 Backend Data 
 ↓ 
 APIs 
@@ -867,22 +868,23 @@ Backend Data
 AI Agents 
 ↓ 
 Chatbot
+```
 **3. Centralized API Access**
 
 The frontend communicates with the backend through the API Gateway.
-
+```
 Frontend 
 ↓ 
 API Gateway 
 ↓ 
 Business Service
-
+```
 **4. Modular AI Design**
 
 New specialized agents can be added later without replacing the complete chatbot architecture.
 
 **For example:**
-
+```
 ChatOrchestrator
       │
       ├── Company Agent
@@ -890,7 +892,7 @@ ChatOrchestrator
       ├── Appointment Agent
       │
       └── Future Specialized Agents
-
+```
 ---
 
 ## 📜 License & Acknowledgments
