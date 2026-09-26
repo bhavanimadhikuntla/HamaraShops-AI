@@ -676,34 +676,6 @@ The agents provide relevant backend information to the language model so that re
 
 ---
 
-## 🛡️ AI Response Rules
-
-The agents are designed to:
-
-Use backend data as the primary source
-
-Avoid inventing company information
-
-Avoid guessing missing information
-
-Avoid inventing customers or partnerships
-
-Avoid inventing revenue or employee numbers
-
-Avoid inventing business results
-
-Distinguish potential AI use cases from measured outcomes
-
-Keep responses relevant to the selected agent
-
-Redirect company questions to the Company Agent
-
-Redirect industry questions to the Industry Agent
-
-Redirect appointment requests to the Appointment Agent
-
----
-
 ## 🏃 Running the Project Locally
 
 **Prerequisites**
