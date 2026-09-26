@@ -254,19 +254,16 @@ Tell me about HamaraShops.ai.
 
 The Company Agent retrieves company information from:
 
+```
 company.json
-      
-      ↓
-
+↓
 ContentDataStore
-      
-      ↓
-
+↓
 CompanyAgentImpl
-      
-      ↓
-
+↓
 GroqService
+
+```
 
 The agent does not need to manually duplicate company information inside the Java code.
 
@@ -491,6 +488,7 @@ POST /api/v1/contact/appointment
 ---
 
 ## 📂 Project Structure
+```
 
 HamaraShops-AI/
 │
@@ -566,6 +564,7 @@ HamaraShops-AI/
 │   └── vite.config.js
 │
 └── README.md
+```
 
 ---
 
