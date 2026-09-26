@@ -255,12 +255,14 @@ Tell me about HamaraShops.ai.
 The Company Agent retrieves company information from:
 
 company.json
-
       ↓
+
 ContentDataStore
       ↓
+
 CompanyAgentImpl
       ↓
+
 GroqService
 
 The agent does not need to manually duplicate company information inside the Java code.
@@ -296,16 +298,22 @@ How can Generative AI help financial services?
 
 industries.json
       ↓
+
 BusinessContentServiceImpl
       ↓
+
 IndustryService
       ↓
+
 IndustryAgentImpl
       ↓
+
 Selected Industry Data
       ↓
+
 GroqService
       ↓
+
 AI Response
 
 The Industry Agent sends only the selected industry's information to the Groq model rather than sending the complete industry dataset.
@@ -335,21 +343,27 @@ The Appointment Agent works with the existing appointment/contact functionality 
 User
   │
   ▼
+
 ChatController
   │
   ▼
+
 ChatOrchestrator
   │
   ▼
+
 Appointment Agent
   │
   ▼
+
 Appointment / Contact functionality
   │
   ▼
+
 Resend Email Service
   │
   ▼
+
 Appointment notification
 
 ---
@@ -382,10 +396,12 @@ All frontend requests are routed through the API Gateway.
 React Frontend
       │
       ▼
+
 API Gateway
    Port 8080
       │
       ▼
+
 Business Service
    Port 8082
 
@@ -427,14 +443,20 @@ POST /api/v1/chat
 Example request:
 
 {
+  
   "message": "How can AI help retail?"
+
 }
+
 
 Example response:
 
 {
+
   "agent": "Industry Agent",
+  
   "response": "..."
+
 }
 
 ---
