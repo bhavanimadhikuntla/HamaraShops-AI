@@ -296,30 +296,18 @@ How can Generative AI help financial services?
 
 **Data Flow**
 
-industries.json
-
-      ↓
-
-BusinessContentServiceImpl
-
-      ↓
-
-IndustryService
-      
-      ↓
-
-IndustryAgentImpl
-      
-      ↓
-
-Selected Industry Data
-      
-      ↓
-
+industries.json 
+↓ 
+BusinessContentServiceImpl 
+↓ 
+IndustryService 
+↓ 
+IndustryAgentImpl 
+↓ 
+Selected Industry Data 
+↓ 
 GroqService
-      
-      ↓
-
+↓
 AI Response
 
 The Industry Agent sends only the selected industry's information to the Groq model rather than sending the complete industry dataset.
@@ -346,38 +334,25 @@ The Appointment Agent works with the existing appointment/contact functionality 
 
 **Appointment Flow**
 
-User
-  
-  │
-  ▼
-
-ChatController
-  
-  │
-  ▼
-
-ChatOrchestrator
-  
-  │
-  ▼
-
-Appointment Agent
-  
-  │
-  ▼
-
-Appointment / Contact functionality
-  
-  │
-  ▼
-
-Resend Email Service
-  
-  │
-  ▼
-
+User 
+│ 
+▼ 
+ChatController 
+│ 
+▼ 
+ChatOrchestrator 
+│ 
+▼ 
+Appointment Agent 
+│ 
+▼
+Appointment / Contact functionality 
+│ 
+▼ 
+Resend Email Service 
+│ 
+▼ 
 Appointment notification
-
 ---
 
 ## 🎯 Chat Orchestrator
@@ -407,19 +382,14 @@ This approach separates responsibilities and makes the chatbot easier to maintai
 
 All frontend requests are routed through the API Gateway.
 
-React Frontend
-      
-      │
-      ▼
-
-API Gateway
-   Port 8080
-      
-      │
-      ▼
-
-Business Service
-   Port 8082
+React Frontend 
+│ 
+▼ 
+API Gateway 
+Port 8080 
+│ 
+▼
+Business Service Port 8082
 
 The gateway exposes the backend APIs under:
 /api/v1/**
@@ -588,16 +558,14 @@ This avoids maintaining separate copies of industry information in the frontend 
 
 Similarly:
 
-company.json
-     
-     │
-     ▼
-ContentDataStore
-     
-     │
-     ├──────────────► Company API
-     │
-     └──────────────► Company Agent
+company.json 
+│ 
+▼ 
+ContentDataStore 
+│ 
+├──────────────► Company API 
+|
+└──────────────► Company Agent
 
 ---
 
@@ -689,30 +657,18 @@ The AI agents use GroqService to communicate with the Groq API.
 
 **The general flow is:**
 
-User Question
-
-      ↓
-
-ChatOrchestrator
-      
-      ↓
-
-Specialized Agent
-      
-      ↓
-
-Backend Data
-      
-      ↓
-
-GroqService
-      
-      ↓
-
-Groq API
-      
-      ↓
-      
+User Question 
+↓ 
+ChatOrchestrator 
+↓ 
+Specialized Agent 
+↓ 
+Backend Data 
+↓ 
+GroqService 
+↓ 
+Groq API 
+↓ 
 AI Response
 
 The agents provide relevant backend information to the language model so that responses remain grounded in the application's data.
@@ -822,19 +778,26 @@ POST http://localhost:8082/api/v1/chat
 Request:
 
 {
+
   "message": "Who is the CEO of HamaraShops.ai?"
+
 }
+
 
 **Industry example:**
 
 {
+
   "message": "How can AI help retail?"
+
 }
 
 **Appointment example:**
 
 {
+
   "message": "I want to schedule an appointment"
+
 }
 
 ---
@@ -893,37 +856,25 @@ Appointment Agent   → Appointment requests
 
 Business information is maintained in backend datasets and services.
 
-Backend Data
-
-     ↓
-
-APIs
-     
-     ↓
-
-Frontend
+Backend Data 
+↓ 
+APIs 
+↓ 
+Frontend 
 
 Backend Data
-
-     ↓
-
-AI Agents
-
-     ↓
+↓ 
+AI Agents 
+↓ 
 Chatbot
-
 **3. Centralized API Access**
 
 The frontend communicates with the backend through the API Gateway.
 
-Frontend
-   
-   ↓
-
-API Gateway
-
-   ↓
-
+Frontend 
+↓ 
+API Gateway 
+↓ 
 Business Service
 
 **4. Modular AI Design**
