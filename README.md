@@ -255,12 +255,15 @@ Tell me about HamaraShops.ai.
 The Company Agent retrieves company information from:
 
 company.json
+      
       ↓
 
 ContentDataStore
+      
       ↓
 
 CompanyAgentImpl
+      
       ↓
 
 GroqService
@@ -297,21 +300,27 @@ How can Generative AI help financial services?
 **Data Flow**
 
 industries.json
+
       ↓
 
 BusinessContentServiceImpl
+
       ↓
 
 IndustryService
+      
       ↓
 
 IndustryAgentImpl
+      
       ↓
 
 Selected Industry Data
+      
       ↓
 
 GroqService
+      
       ↓
 
 AI Response
@@ -341,26 +350,32 @@ The Appointment Agent works with the existing appointment/contact functionality 
 **Appointment Flow**
 
 User
+  
   │
   ▼
 
 ChatController
+  
   │
   ▼
 
 ChatOrchestrator
+  
   │
   ▼
 
 Appointment Agent
+  
   │
   ▼
 
 Appointment / Contact functionality
+  
   │
   ▼
 
 Resend Email Service
+  
   │
   ▼
 
@@ -375,9 +390,11 @@ The ChatOrchestrator acts as the central coordinator for the chatbot.
 Its responsibility is to determine which specialized agent should handle the user's request.
 
                     User Message
+                        
                          │
                          ▼
                 ChatOrchestrator
+                         
                          │
             ┌────────────┼────────────┐
             │            │            │
@@ -394,11 +411,13 @@ This approach separates responsibilities and makes the chatbot easier to maintai
 All frontend requests are routed through the API Gateway.
 
 React Frontend
+      
       │
       ▼
 
 API Gateway
    Port 8080
+      
       │
       ▼
 
@@ -571,9 +590,11 @@ This avoids maintaining separate copies of industry information in the frontend 
 Similarly:
 
 company.json
+     
      │
      ▼
 ContentDataStore
+     
      │
      ├──────────────► Company API
      │
@@ -590,7 +611,6 @@ It contains:
 Company information
 
 Industry information
-
 
 Content management
 
@@ -671,17 +691,29 @@ The AI agents use GroqService to communicate with the Groq API.
 **The general flow is:**
 
 User Question
+
       ↓
+
 ChatOrchestrator
+      
       ↓
+
 Specialized Agent
+      
       ↓
+
 Backend Data
+      
       ↓
+
 GroqService
+      
       ↓
+
 Groq API
+      
       ↓
+      
 AI Response
 
 The agents provide relevant backend information to the language model so that responses remain grounded in the application's data.
@@ -863,14 +895,21 @@ Appointment Agent   → Appointment requests
 Business information is maintained in backend datasets and services.
 
 Backend Data
+
      ↓
+
 APIs
+     
      ↓
+
 Frontend
 
 Backend Data
+
      ↓
+
 AI Agents
+
      ↓
 Chatbot
 
@@ -879,9 +918,13 @@ Chatbot
 The frontend communicates with the backend through the API Gateway.
 
 Frontend
+   
    ↓
+
 API Gateway
+
    ↓
+
 Business Service
 
 **4. Modular AI Design**
@@ -904,4 +947,4 @@ ChatOrchestrator
 
 Distributed under the **MIT License**. See `LICENSE` for details.
 
-Developed with ❤️ by **Gorantla Charan Ranga (Full Stack Java Developer)**.
+Developed with ❤️ by **Bhavani (Full Stack Java Developer)**.
