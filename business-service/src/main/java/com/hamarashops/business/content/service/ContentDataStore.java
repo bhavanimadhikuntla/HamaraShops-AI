@@ -93,4 +93,3 @@ public class ContentDataStore {
     public List<CaseStudyContent> getCaseStudies() { return caseStudies; }
     public List<MetricContent> getMetrics() { return metrics; }
 }
-
